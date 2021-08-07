@@ -1,0 +1,23 @@
+modules:
+  macro:
+    - key: document-approver
+      function: main
+      title: document-approver
+      description: Inserts a macro that lists approvers of the document 
+      config:
+        function: config-function-key
+  function:
+    - key: main
+      handler: index.run
+    - key: config-function-key
+      handler: index.config
+app:
+  id: ari:cloud:ecosystem::app/5dc5a0ed-e3b9-49cf-8d9d-ad427c70d2d4
+  name: document-approver
+permissions:
+  scopes:
+    - read:confluence-props
+    - read:confluence-content.summary
+    - read:confluence-user
+    - read:me
+    - write:confluence-props
