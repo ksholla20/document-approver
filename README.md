@@ -1,8 +1,11 @@
-# Forge Hello World
+# Forge Document Approver
 
-This project contains a Forge app written in Javascript that displays `Hello World!` in a Confluence macro. 
+Confluence is a documentation repository. It may contain design docs, implementation docs, Project proposal, or a sales pitch. As a creator of these docs, I feel that the documentation would look complete if the required stakeholders could stamp their sign-off on the document. This inspired us to build this confluence macro.
 
-See [developer.atlassian.com/platform/forge/](https://developer.atlassian.com/platform/forge) for documentation and tutorials explaining Forge.
+This is a macro using which a stakeholder, and stakeholder alone can mark the approval for the document. The content writer can add this macro at the beginning of the document (Or anywhere). In the macro configs, the author needs to chose who the approvers are. Approvers can see an approve (or unapprove) button. Once clicked, the status corresponding to that approver turns approved.
+
+If the document is changed after the approver approves, the status turns to _"approved but modified"_. This denotes that the doc has changed. The approver can re-approve the doc again.
+
 
 ## Requirements
 
@@ -10,19 +13,17 @@ See [Set up Forge](https://developer.atlassian.com/platform/forge/set-up-forge/)
 
 ## Quick start
 
-- Modify your app by editing the `src/index.jsx` file.
-
-- Build and deploy your app by running:
+- Build and deploy the app by running:
 ```
 forge deploy
 ```
 
-- Install your app in an Atlassian site by running:
+- Install the app in an Atlassian site by running:
 ```
 forge install
 ```
 
-- Develop your app by running `forge tunnel` to proxy invocations locally:
+- Develop the app by running `forge tunnel` to proxy invocations locally:
 ```
 forge tunnel
 ```
