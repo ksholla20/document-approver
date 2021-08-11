@@ -110,7 +110,7 @@ const App = () => {
                   {
                   currentUser.accountId==approver &&
                   <Cell>
-                      <Button text={(approvalStatus[approver]&&approvalStatus[approver].isApproved)?"unapprove":"approve"} onClick={()=>setApproval(approver, !approvalStatus[approver])}></Button>
+                      <Button text={(approvalStatus[approver]&&approvalStatus[approver].isApproved)?"unapprove":"approve"} onClick={()=>setApproval(approver, !(approvalStatus[approver]&&approvalStatus[approver].isApproved))}></Button>
                   </Cell>
                   }
                 </Row>
