@@ -27,7 +27,7 @@ const Config = () => {
       <TextField
         name="approvers"
         label="Comma Separated list of approvers"
-        defaultValue={defaultConfig.approvers}
+        defaultValue={defaultConfig.name}
       />
     </MacroConfig>
   );
@@ -51,30 +51,11 @@ const App = () => {
     const history = await api.asApp().requestConfluence(route`/wiki/rest/api/content/${contentId}/history`);
     return history.json();
   });
-  const [approverMap, setApproverMap] = useState({});
-  useEffect(() => {
-    const getApprovers = async () => {
-      let approvers = {};
-      await approverList.forEach(async (approverId) => {
-        const approver = await api.asUser().requestConfluence(route`/wiki/rest/api/user?accountId=${approverId}`).json();
-        approvers[approverId] = approver.displayName;
-      })
-      return approvers;
-    }
-    getApprovers().then(approvers => {
-      setApproverMap(approvers);
-    })
-  }, [approverList]);
-  
-
-  const setApproval = async(approver, isApproved) => {
-    const status = approvalStatus;
-    status[approver]={'isApproved': isApproved, 'lastUpdated': new Date().toString()};
-    await properties
-      .onConfluencePage(contentId)
-      .set("approvalStatus", status)
-      .then(() => setApprovalStatus(status));
-  };
+  const urlParam = approverList.join('&accountId=');
+  const [userList, setUserList] = useState(async () => {
+    const history = await api.asApp().requestConfluence(route(`//wiki/rest/api/user/bulk?accountId=${urlParam}`));
+    return history.json();
+  });
 
   return (
     <Fragment>
@@ -87,30 +68,30 @@ const App = () => {
             <Text content="Status" />
           </Cell>
         </Head>
-        {approverList && approverList.map(approver => (
+        {userList && userList.results.map(approver => (
                 <Row>
                   <Cell>
                     <Text>
-                      {approverMap[approver]}
+                      {approver.displayName/*approverMap[approver]*/}
                     </Text>
                   </Cell>
                   <Cell>
-                      {approvalStatus[approver]
-                        && approvalStatus[approver].isApproved
-                        && Date.parse(approvalStatus[approver].lastUpdated) >= Date.parse(lastUpdated.lastUpdated.when)
+                      {approvalStatus[approver.accountId]
+                        && approvalStatus[approver.accountId].isApproved
+                        && Date.parse(approvalStatus[approver.accountId].lastUpdated) >= Date.parse(lastUpdated.lastUpdated.when)
                         && <Text><Badge appearance="added" text="Approved" /> </Text>}
-                      {approvalStatus[approver]
-                        && approvalStatus[approver].isApproved
-                        && Date.parse(approvalStatus[approver].lastUpdated) < Date.parse(lastUpdated.lastUpdated.when)
+                      {approvalStatus[approver.accountId]
+                        && approvalStatus[approver.accountId].isApproved
+                        && Date.parse(approvalStatus[approver.accountId].lastUpdated) < Date.parse(lastUpdated.lastUpdated.when)
                         && <Text><Badge appearance="primary" text="Approved but modified" /> </Text>}
-                      {!(approvalStatus[approver]
-                        && approvalStatus[approver].isApproved)
+                      {!(approvalStatus[approver.accountId]
+                        && approvalStatus[approver.accountId].isApproved)
                         && <Text><Badge appearance="removed" text="Not Approved" /> </Text>}
                   </Cell>
                   {
-                  currentUser.accountId==approver &&
+                  currentUser.accountId==approver.accountId &&
                   <Cell>
-                      <Button text={(approvalStatus[approver]&&approvalStatus[approver].isApproved)?"unapprove":"approve"} onClick={()=>setApproval(approver, !(approvalStatus[approver]&&approvalStatus[approver].isApproved))}></Button>
+                      <Button text={(approvalStatus[approver.accountId]&&approvalStatus[approver.accountId].isApproved)?"unapprove":"approve"} onClick={()=>setApproval(approver.accountId, !(approvalStatus[approver.accountId] && approvalStatus[approver.accountId].isApproved))}></Button>
                   </Cell>
                   }
                 </Row>
